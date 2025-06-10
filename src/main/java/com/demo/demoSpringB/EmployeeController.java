@@ -9,12 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -42,11 +45,10 @@ public class EmployeeController {
 	    }
 
 	    @PostMapping("/batch")
-	    public ResponseEntity<String> addMultipleEmployees(@RequestBody List<Employee> employees) {
+	    public ResponseEntity<String> addMultipleEmployees(@Valid @RequestBody List<Employee> employees) {
 	        service.saveAll(employees);
 	        return ResponseEntity.ok("All employees saved");
 	    }
-
 	    
 	    @PutMapping("/{id}")
 	    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody Employee updatedEmployee) {
@@ -54,10 +56,14 @@ public class EmployeeController {
 	        if (employee == null) {
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	        }
-	        employee.setName(updatedEmployee.getName());
-	        employee.setDesignation(updatedEmployee.getDesignation());
-	        employee.setDepartment(updatedEmployee.getDepartment());
-	        employee.setLocation(updatedEmployee.getLocation());
+	        if (updatedEmployee.getName() != null)
+	        	employee.setName(updatedEmployee.getName());
+	        if (updatedEmployee.getDesignation() != null)
+	        	employee.setDesignation(updatedEmployee.getDesignation());
+	        if (updatedEmployee.getDepartment() != null) 
+	        	employee.setDepartment(updatedEmployee.getDepartment());
+	        if (updatedEmployee.getLocation() != null) 
+	        	employee.setLocation(updatedEmployee.getLocation());
 	        Employee savedEmployee = service.saveEmployee(employee);
 	        return ResponseEntity.ok(savedEmployee);
 	    }
@@ -72,7 +78,6 @@ public class EmployeeController {
 
 	        return ResponseEntity.notFound().build();
 	    }
-	    
 	    
 	    @GetMapping("/groupByDept")
 	    public ResponseEntity<Map<String, List<Employee>>> getGroupedByDept() {

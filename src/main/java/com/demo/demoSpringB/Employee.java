@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Employee {
@@ -11,10 +13,12 @@ public class Employee {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+	@NotBlank(message = "Name is required")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String name;
     private String designation;
     private String department;
-    private String Location;
+    private String location;
     
 	public Long getId() {
 		return id;
@@ -45,10 +49,10 @@ public class Employee {
 	}
 	
 	public String getLocation() {
-		return Location;
+		return location;
 	}
 	public void setLocation(String location) {
-		Location = location;
+		this.location = location;
 	} 
     
 }

@@ -4,7 +4,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class EmployeeService {
@@ -18,10 +20,12 @@ public class EmployeeService {
 	public Employee saveEmployee(Employee employee) {
 		return repository.save(employee);
 	}
-
+	
 	public Employee getEmployeeById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Employee not found"));
-    }
+		 return repository.findById(id)
+			        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+	}
+	
 	
 	public void deleteEmployee(Long id) {
         repository.deleteById(id);
