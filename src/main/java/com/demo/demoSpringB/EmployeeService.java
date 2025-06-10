@@ -1,9 +1,9 @@
 package com.demo.demoSpringB;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,4 +26,16 @@ public class EmployeeService {
 	public void deleteEmployee(Long id) {
         repository.deleteById(id);
     }
+	
+	public List<Employee> getAllEmpByDept() {
+	    List<Employee> employees = repository.findAll();
+	    employees.sort(Comparator.comparing(Employee::getDepartment));
+	    return employees;
+	}
+
+	public void saveAll(List<Employee> employees) {
+		repository.saveAll(employees);		
+	}
+
+	
 }
