@@ -26,7 +26,6 @@ public class EmployeeService {
 			        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 	}
 	
-	
 	public void deleteEmployee(Long id) {
         repository.deleteById(id);
     }
@@ -41,5 +40,16 @@ public class EmployeeService {
 		repository.saveAll(employees);		
 	}
 
+	public Long getSecondHighestSalary() {
+	    List<Long> salaries = repository.findDistinctSalaries();
+	    if (salaries.size() >= 2) {
+	        return salaries.get(1);
+	    }
+	    return null;
+	}
+	
+	public List<Employee> getTopEarnersByDept() {
+        return repository.getTopEarnersByDept();
+    }
 	
 }

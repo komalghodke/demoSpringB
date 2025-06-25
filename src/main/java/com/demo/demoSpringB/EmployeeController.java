@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import jakarta.validation.Valid;
 
@@ -25,6 +28,9 @@ public class EmployeeController {
 	
 	    @Autowired
 	    private EmployeeService service;
+	    
+	    @Autowired
+	    private EmployeeRepository repository;
 
 	    @GetMapping
 	    public List<Employee> getAllEmployees() { return service.getAllEmployees(); }
@@ -64,9 +70,12 @@ public class EmployeeController {
 	        	employee.setDepartment(updatedEmployee.getDepartment());
 	        if (updatedEmployee.getLocation() != null) 
 	        	employee.setLocation(updatedEmployee.getLocation());
+	        if (updatedEmployee.getSalary() != null)
+	        		employee.setSalary(updatedEmployee.getSalary());
 	        Employee savedEmployee = service.saveEmployee(employee);
 	        return ResponseEntity.ok(savedEmployee);
 	    }
+	    
 	    
 	    @DeleteMapping("/{id}")
 	    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
@@ -87,4 +96,32 @@ public class EmployeeController {
 	        return ResponseEntity.ok(grouped);
 	    }
 	    
+	    @GetMapping("/highestSal")
+	    public ResponseEntity<List<Employee>> getHighestSalary() {
+	        List<Employee> topEarners = repository.highestSalary();
+	        return ResponseEntity.ok(topEarners);
+	    }
+	    
+	    @GetMapping("/secondHighestSal")
+	    public ResponseEntity<Long> getSecondHighestSalary() {
+	        Long salary = service.getSecondHighestSalary();
+	        return salary != null ? ResponseEntity.ok(salary) : ResponseEntity.notFound().build();
+	    }
+	    
+	    @GetMapping("/topEarnersByDept")
+        public ResponseEntity<List<Employee>> getTopEarnersByDept() {
+            List<Employee> employees = service.getTopEarnersByDept();
+            return ResponseEntity.ok(employees);
+        }
+	    
+	    @CrossOrigin(origins = "http://localhost:3000")
+	    @GetMapping("/search")
+	    public ResponseEntity<String> search(@RequestParam String query) {
+	    	String serpApiKey = "";
+	        String serpUrl = "https://serpapi.com/search.json?q=" + query + "&api_key=" + serpApiKey;
+	        RestTemplate restTemplate = new RestTemplate();
+	        String response = restTemplate.getForObject(serpUrl, String.class);
+	        return ResponseEntity.ok(response);
+	    }
+
 }

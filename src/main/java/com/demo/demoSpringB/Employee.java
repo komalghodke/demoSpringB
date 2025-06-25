@@ -19,6 +19,7 @@ public class Employee {
     private String designation;
     private String department;
     private String location;
+    private Long salary;
     
 	public Long getId() {
 		return id;
@@ -54,5 +55,12 @@ public class Employee {
 	public void setLocation(String location) {
 		this.location = location;
 	} 
+	
+	public Long getSalary() {
+		return salary;
+	}
+	public void setSalary(Long salary) {
+		this.salary = salary;
+	}
     
 }
